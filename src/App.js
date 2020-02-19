@@ -1,47 +1,41 @@
 import React, { useState } from "react";
 
-/* React */
-// class App extends React.Component {
-//   state = {
-//     item: 0
-//   };
+const useInput = (initialValue, validator) => {
+  const [value, setVaule] = useState(initialValue);
 
-//   incrementItem = () => {
-//     this.setState({
-//       item: this.state.item + 1
-//     });
-//   };
-//   decrementItem = () => {
-//     this.setState({
-//       item: this.state.item - 1
-//     });
-//   };
+  //글 입력이 가능한 이벤트
+  const onChange = event => {
+    const {
+      target: { value }
+    } = event;
 
-//   render() {
-//     const { item } = this.state;
-//     console.log(item);
-//     return (
-//       <div className="App">
-//         <h2>Hello {item}</h2>
-//         <button onClick={this.incrementItem}>incrementItem</button>
-//         <button onClick={this.decrementItem}>decrementItem</button>
-//       </div>
-//     );
-//   }
-// }
+    let willUpdate = true; //글 업데이트가 가능한지(글 입력이 가능한지)
 
-//React Hooks
-const App2 = () => {
-  const [item, setItem] = useState(0);
-  const incrementItem = () => setItem(item + 1);
-  const decrementItem = () => setItem(item - 1);
+    //validator이 함수면
+    if (typeof validator === "function") {
+      willUpdate = validator(value); //validator가 maxLen이라는 함수니까
+      console.log(willUpdate); //글이 10글자가 넘어가면 false를 리턴할 것임
+    }
+    //willUpdate가 true면 (즉, 10글자가 넘어가면 글이 안써짐)
+    if (willUpdate) {
+      setVaule(value);
+    }
+  };
+
+  return { value, onChange };
+};
+
+const App = () => {
+  const maxLen = value => value.length <= 10;
+  //const maxLen = value => value.includes("@");      //value안에 @가 있으면 글이 안써지도록
+  const name = useInput("Mr.", maxLen);
   return (
     <div className="App">
-      <h2>Hello {item}</h2>
-      <button onClick={incrementItem}>incrementItem</button>
-      <button onClick={decrementItem}>decrementItem</button>
+      <h2>Hello</h2>
+      {/* <input placeholder="Name" value={name.value} onChange={name.onChange} /> */}
+      <input placeholder="Name" {...name} />
     </div>
   );
 };
 
-export default App2;
+export default App;

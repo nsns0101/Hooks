@@ -13,7 +13,7 @@
 * useTitle
   - react document의 title을 몇개의 hooks와 함께 바꾸는 것
 * useInput
-  - input 역할
+  - input 역할( + Validation)
 * usePageLeave
   - 유저가 page를 벗어나는 시점을 발견하면 함수를 실행
 * useClick
