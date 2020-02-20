@@ -1,43 +1,20 @@
-import React, { useState } from "react";
-
-const content = [
-  {
-    id: 1,
-    tab: "Section 1",
-    content: "I'm the content of the Section 1"
-  },
-  {
-    id: 2,
-    tab: "Section 2",
-    content: "I'm the content of the Section 2"
-  }
-];
-
-const useTabs = (initialTab, allTabs) => {
-  //allTabs가 false 또는 allTabs가 배열이 아닐 때
-  const [currentIndex, setCurrentIndex] = useState(initialTab);
-  if (!allTabs || !Array.isArray(allTabs)) {
-    return;
-  }
-  return {
-    currentItem: allTabs[currentIndex],
-    changeItem: setCurrentIndex
-  };
-};
+import React, { useState, useEffect } from "react";
 
 const App = () => {
-  const { currentItem, changeItem } = useTabs(0, content);
+  const [number, setNumber] = useState(0);
+  const [aNumber, setAnumber] = useState(0);
+
+  const sayHello = () => console.log("hello");
+
+  //componentDidMount와 componentDidUpdate의 역할 + useEffect가 return값이 function임(ComponentWillUnMount의 역할)
+  // useEffect(function,[dependency])
+  useEffect(sayHello, [number]); // componentDidMount + [number] 값이 바뀔때만 실행되게
+  // useEffect(sayHellol, []); //componentDidMount만 실행
   return (
     <div className="App">
-      {content.map((section, index) => (
-        //changeItem은 useTabs안의 changeItem을 가르키고
-        //그 changeItem은 setCurrentIndex를 가르키니
-        //결과적으로 setCurrentIndex(index)와 같음
-        <button key={index} onClick={() => changeItem(index)}>
-          {section.tab}
-        </button>
-      ))}
-      <div>{currentItem.content}</div>
+      <div>Hi</div>
+      <button onClick={() => setNumber(number + 1)}>{number}</button>
+      <button onClick={() => setAnumber(aNumber + 1)}>{aNumber}</button>
     </div>
   );
 };
