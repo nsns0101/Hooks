@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from "react";
 
+const useTitle = initialTitle => {
+  const [title, setTitle] = useState(initialTitle);
+  const updateTitle = () => {
+    //document.querySelector = 특정 id나 class 상관없이 element를 찾음
+    const htmlTitle = document.querySelector("title"); // <title>Loading...</title>
+    htmlTitle.innerText = title; // Loading...
+  };
+
+  //title 값이 바뀌면 updateTitle함수 실행
+  useEffect(updateTitle, [title]);
+
+  return setTitle;
+};
+
 const App = () => {
-  const [number, setNumber] = useState(0);
-  const [aNumber, setAnumber] = useState(0);
-
-  const sayHello = () => console.log("hello");
-
-  //componentDidMount와 componentDidUpdate의 역할 + useEffect가 return값이 function임(ComponentWillUnMount의 역할)
-  // useEffect(function,[dependency])
-  useEffect(sayHello, [number]); // componentDidMount + [number] 값이 바뀔때만 실행되게
-  // useEffect(sayHellol, []); //componentDidMount만 실행
+  const titleUpdator = useTitle("Loading...");
+  setTimeout(function() {
+    return titleUpdator("Home");
+  }, 2000);
   return (
     <div className="App">
       <div>Hi</div>
-      <button onClick={() => setNumber(number + 1)}>{number}</button>
-      <button onClick={() => setAnumber(aNumber + 1)}>{aNumber}</button>
     </div>
   );
 };
