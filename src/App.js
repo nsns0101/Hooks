@@ -1,28 +1,33 @@
-//usePreventLeave
-//버튼을 누르고
-//창을 닫으려고하면 닫으시겠습니까?
-//새로고침을 하면 새로고침하시겠습니까?
-import React from "react";
+//useBeforeLeave
+//마우스 커서가 페이지 공간을 벗어나면 실행하는 함수
+import React, { useEffect } from "react";
 
-const uesPreventLeave = () => {
-  const listener = event => {
-    event.preventDefault(); //이벤트를 취소할 수 있는 경우 이벤트의 전파를 막지않고 그 이벤트를 취소함
-    event.returnValue = false; //event.returnValue가 true든 false든 상관없이 이 문장이 없으면 이벤트를 실행하지 않음
+const useBeforeLeave = onBefore => {
+  // if (typeof onBefore !== "function") {
+  //   return;
+  // }
+  const handle = event => {
+    // console.log(event); // handle는 mouseleave 이벤트
+    console.log(event.clientY); //페이지를 벗어날 때의 마우스 y좌표(위로 벗어나면 숫자가 커짐)
+    //마우스의 Y좌표가 위로 벗어났을 때만
+    if (event.clientY <= 0) {
+      onBefore();
+    }
   };
-  const enablePrevent = () => window.addEventListener("beforeunload", listener);
-  const disablePrevent = () =>
-    window.removeEventListener("beforeunload", listener);
 
-  return { enablePrevent, disablePrevent };
+  useEffect(() => {
+    document.addEventListener("mouseleave", handle);
+
+    return () => document.removeEventListener("mouseleave", handle);
+  }, []);
 };
 
 const App = () => {
-  const { enablePrevent, disablePrevent } = uesPreventLeave();
-
+  const begForLife = () => console.log("Please dont leave");
+  useBeforeLeave(begForLife);
   return (
     <div className="App">
-      <button onClick={enablePrevent}>Protect</button>
-      <button onClick={disablePrevent}>UnProtect</button>
+      <h1>hello</h1>
     </div>
   );
 };
