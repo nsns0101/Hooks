@@ -1,31 +1,28 @@
+//usePreventLeave
+//버튼을 누르고
+//창을 닫으려고하면 닫으시겠습니까?
+//새로고침을 하면 새로고침하시겠습니까?
 import React from "react";
 
-const useConfirm = (message = "", delete_yes, delete_no) => {
-  //callback가 function이 아니면 아무것도 리턴을 하지 않음
-  if (typeof delete_yes !== "function" && delete_no !== "function") {
-    return;
-  }
-
-  const confirmAction = () => {
-    //window.confirm = 경고창과 비슷한 예, 아니오를 누를 수 있는 창
-    if (window.confirm(message)) {
-      //예를 누르면
-      delete_yes(); //callback함수가 실행
-      //=> callback && 는 결과적으로 deleteWorld함수
-    } else {
-      delete_no();
-    }
+const uesPreventLeave = () => {
+  const listener = event => {
+    event.preventDefault(); //이벤트를 취소할 수 있는 경우 이벤트의 전파를 막지않고 그 이벤트를 취소함
+    event.returnValue = false; //event.returnValue가 true든 false든 상관없이 이 문장이 없으면 이벤트를 실행하지 않음
   };
-  return confirmAction;
+  const enablePrevent = () => window.addEventListener("beforeunload", listener);
+  const disablePrevent = () =>
+    window.removeEventListener("beforeunload", listener);
+
+  return { enablePrevent, disablePrevent };
 };
 
 const App = () => {
-  const deleteWorld = () => console.log("Deleting the world..."); //삭제 : 예
-  const abort = () => console.log("Aborted");
-  const confirmDelete = useConfirm("Are you sure", deleteWorld, abort);
+  const { enablePrevent, disablePrevent } = uesPreventLeave();
+
   return (
     <div className="App">
-      <button onClick={confirmDelete}>Delete the world</button>
+      <button onClick={enablePrevent}>Protect</button>
+      <button onClick={disablePrevent}>UnProtect</button>
     </div>
   );
 };
