@@ -42,6 +42,14 @@
 
 - 유저가 page를 벗어나는 시점을 발견하면 함수를 실행
 
+### useFadeIn
+
+- 어떤 element든 상관없이 애니메이션을 element 안으로 서서히 사라지게 만듬
+
+### useNetwork
+
+- Online 또는 Offline 상태인지를 감지
+
 ### useScroll
 
 - 스크롤 사용시 감지
@@ -57,11 +65,3 @@
 ### useAxios
 
 - HTTP requests client axios를 위한 wrapper 같은 것
-
-- useFadeIn
-
-  - 어떤 element든 상관없이 애니메이션을 element 안으로 서서히 사라지게 만듬
-
-- useNetwork
-
-  - Online 또는 Offline 상태인지를 감지
