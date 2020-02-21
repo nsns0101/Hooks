@@ -1,36 +1,44 @@
-//useFadeIn
-//서서히 나타나는 것
-import React, { useEffect, useRef } from "react";
+//useNetwork
+//네비게이터가 온라인 또는 오프라인 되는 것을 방지
+//네트워크 상태가 Online인지 Offline인지를 판단
+import React, { useEffect, useState } from "react";
 
-//duration => 나타내는 속도, delay함수가 일어나는 속도
-const useFadeIn = (duration = 1, delay = 0) => {
-  // if (typeof duration !== "number" || typeof delay !== "number") {
-  //   return;
-  // }
-  const element = useRef(); //element는 실행시킨 함수의 ref태그를 가르킴?
-  useEffect(() => {
-    if (element.current) {
-      const { current } = element;
-      //transition = 애니메이션 효과
-      //style=`transition: `opacity ${duration}s ease-in-out ${delay}s`
-      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`; //드러나는 속도
-      //style=`opacity:${duration}`
-      current.style.opacity = 1; //불투명도
+//네트워크를 판단하는 함수
+const useNetwork = onChange => {
+  //navigator.onLine는 브라우저의 온라인 상태를 반환함
+  console.log(navigator.onLine); //온라인이면 true를 반환
+  const [status, setStatus] = useState(navigator.onLine);
+
+  const handleChange = () => {
+    if (typeof onChange === "function") {
+      //onChange는 App의 handleNetworkChange함수
+      onChange(navigator.onLine); //true면 console.log("We juse went online"); 실행
     }
+    setStatus(navigator.onLine); //네트워크값이 바뀌는 것을 감지
+  };
+
+  useEffect(() => {
+    window.addEventListener("online", handleChange); //window에 online이벤트 생성
+    window.addEventListener("offline", handleChange); //window에 offline이벤트 생성
+
+    return () => {
+      window.removeEventListener("online", handleChange);
+      window.removeEventListener("offline", handleChange);
+    };
   }, []);
 
-  return { ref: element, style: { opacity: 0 } };
+  return status;
 };
 
 const App = () => {
-  const fadeInH1 = useFadeIn(1, 2);
-  const fadeInP = useFadeIn(5, 3);
+  const handleNetworkChange = online => {
+    console.log(online ? "We juse went online" : "We are offline");
+  };
+  const online = useNetwork(handleNetworkChange);
+
   return (
     <div className="App">
-      {/* opacity는 불투명도  0이면 안보임 */}
-      {/* <h1 ref={fadeInH1.ref} style={fadeInH1.style}> hello</h1>*/}
-      <h1 {...fadeInH1}>Hello</h1>
-      <p {...fadeInP}>lorem ipsum lalala</p>
+      <h1>{online ? "Online" : "Offline"}</h1>
     </div>
   );
 };
