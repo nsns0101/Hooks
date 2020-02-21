@@ -1,38 +1,50 @@
-//useScroll
-//유저 스크롤을 감지 x는 필요없음
-import React, { useEffect, useState } from "react";
+//useFullscreen
+//이미지를 풀스크린으로 만들어주는 함수
+import React, { useEffect, useState, useRef } from "react";
 
-const useScroll = () => {
-  const [state, setState] = useState({
-    x: 0,
-    y: 0
-  });
-
-  const onScroll = () => {
-    console.log(`x : ${window.scrollX} \n y : ${window.scrollY}`);
-    setState({
-      x: window.scrollX, //화면의 스크롤 x좌표
-      y: window.scrollY //화면의 스크롤 y좌표
-    });
+const useFullscreen = callback => {
+  const element = useRef();
+  let fullScreen = false; //풀스크린인지의 여부(처음에 exit fullscreen버튼을 누르면 오류가 뜸을 방지)
+  //풀스크린으로 만들어주는 함수
+  const triggerFull = () => {
+    if (element.current) {
+      fullScreen = true; //풀스크린
+      element.current.requestFullscreen();
+      if (callback && typeof callback === "function") {
+        callback(true);
+      }
+    }
   };
 
-  useEffect(() => {
-    window.addEventListener("scroll", onScroll); //스크롤 이벤트 생성
+  //풀스크린을 빠져나가는 함수
+  const exitFull = () => {
+    if (fullScreen) {
+      document.exitFullscreen(); //왜 element.current.exitFullscreen(); 이 아닌지는 몰라도 됨
+      fullScreen = false;
+    }
+    if (callback && typeof callback === "function") {
+      callback(false);
+    }
+  };
 
-    return () => window.removeEventListener("scroll", onScroll); //스크롤 이벤트 삭제
-  }, []);
-
-  return state;
+  return { element, triggerFull, exitFull };
 };
 
 const App = () => {
-  const { y } = useScroll();
-
+  const onFulls = isFull => {
+    console.log(isFull ? "We are full" : "We are small");
+  };
+  const { element, triggerFull, exitFull } = useFullscreen(onFulls);
   return (
     <div className="App" style={{ height: "1000vh" }}>
-      <h1 style={{ position: "fixed", color: y > 100 ? "red" : "blue" }}>
-        Hello
-      </h1>
+      <div ref={element}>
+        <img
+          ref={element}
+          src="https://akns-images.eonline.com/eol_images/Entire_Site/201587/rs_1024x759-150907153624-1024.nicole-arbour.cm.9715.jpg"
+        />
+        <button onClick={triggerFull}>Make FullScreen</button>
+        <button onClick={exitFull}>Exit fullscreen</button>
+      </div>
     </div>
   );
 };
