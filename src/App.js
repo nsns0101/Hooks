@@ -1,50 +1,54 @@
-//useFullscreen
-//이미지를 풀스크린으로 만들어주는 함수
-import React, { useEffect, useState, useRef } from "react";
+//useNotification
+//사용자에게 알림을 주는 함수
+//모바일에선 진동도 줄 수 있음
+//참고 : https://developer.mozilla.org/ko/docs/Web/API/notification
+//크롬으로 할 경우 주소옆에 i 모양에서 알림허용을 설정할 것
+import React from "react";
 
-const useFullscreen = callback => {
-  const element = useRef();
-  let fullScreen = false; //풀스크린인지의 여부(처음에 exit fullscreen버튼을 누르면 오류가 뜸을 방지)
-  //풀스크린으로 만들어주는 함수
-  const triggerFull = () => {
-    if (element.current) {
-      fullScreen = true; //풀스크린
-      element.current.requestFullscreen();
-      if (callback && typeof callback === "function") {
-        callback(true);
-      }
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    console.log("oj");
+    return;
+  }
+
+  const fireNotification = () => {
+    //denied = 사용자가 알림 표시를 거절
+    //granted = 사용자가 알림 표시를 허용
+    //default = 사용자의 선택을 알 수 없기 때문에 브라우저가 거절한 상태의 값으로 작동
+
+    //권한 허용상태가 아니면
+    if (Notification.permission !== "granted") {
+      console.log("권한 허용을 요청");
+      //알림을 허용을 요청
+      Notification.requestPermission().then(permission => {
+        //수락시
+        if (permission === "granted") {
+          new Notification(title, options);
+        }
+        //거절시
+        else {
+          return;
+        }
+      });
+    }
+    //권한 허용상태이면
+    else {
+      console.log("권한 허용된 상태");
+      new Notification(title, options);
     }
   };
 
-  //풀스크린을 빠져나가는 함수
-  const exitFull = () => {
-    if (fullScreen) {
-      document.exitFullscreen(); //왜 element.current.exitFullscreen(); 이 아닌지는 몰라도 됨
-      fullScreen = false;
-    }
-    if (callback && typeof callback === "function") {
-      callback(false);
-    }
-  };
-
-  return { element, triggerFull, exitFull };
+  return fireNotification;
 };
 
 const App = () => {
-  const onFulls = isFull => {
-    console.log(isFull ? "We are full" : "We are small");
-  };
-  const { element, triggerFull, exitFull } = useFullscreen(onFulls);
+  const tiggerNotification = useNotification("Can I steal your kim", {
+    body: "I Love Kimchi dont you"
+  });
+
   return (
-    <div className="App" style={{ height: "1000vh" }}>
-      <div ref={element}>
-        <img
-          ref={element}
-          src="https://akns-images.eonline.com/eol_images/Entire_Site/201587/rs_1024x759-150907153624-1024.nicole-arbour.cm.9715.jpg"
-        />
-        <button onClick={triggerFull}>Make FullScreen</button>
-        <button onClick={exitFull}>Exit fullscreen</button>
-      </div>
+    <div className="App">
+      <button onClick={tiggerNotification}>Hello</button>
     </div>
   );
 };
